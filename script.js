@@ -102,6 +102,50 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
+    const displayWeather = async (lat, lon, name, country) => {
+        try {
+            // Second API: Open-Meteo Weather Forecast (No API Key Required)
+            const weatherUrl = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m,apparent_temperature,precipitation,weather_code,wind_speed_10m&timezone=auto`;
+            const weatherResponse = await fetch(weatherUrl);
+            const weatherData = await weatherResponse.json();
+
+            if (weatherData.error) {
+                showError("Could not fetch weather data.");
+                return;
+            }
+
+            const current = weatherData.current;
+            
+            // Populate UI
+            elements.cityName.textContent = name;
+            elements.countryName.textContent = country || '';
+            updateDateTime(weatherData.timezone);
+            
+            elements.temp.textContent = Math.round(current.temperature_2m);
+            elements.feelsLike.textContent = Math.round(current.apparent_temperature);
+            elements.humidity.textContent = current.relative_humidity_2m;
+            elements.windSpeed.textContent = current.wind_speed_10m;
+            elements.precipitation.textContent = current.precipitation;
+
+            // Update Icon & Description
+            const code = current.weather_code;
+            const weatherInfo = weatherCodes[code] || weatherCodes[0];
+            
+            elements.weatherDesc.textContent = weatherInfo.desc;
+            elements.weatherIcon.className = `fa-solid wea-icon ${weatherInfo.icon} ${weatherInfo.class}`;
+
+            updateBackgroundTheme(weatherInfo.class);
+
+            // Show weather data
+            loader.classList.add('hidden');
+            weatherSection.classList.remove('hidden');
+
+        } catch (error) {
+            console.error(error);
+            showError("An error occurred while fetching data.");
+        }
+    };
+
     const getWeather = async (city) => {
         if (!city.trim()) return;
 
@@ -120,47 +164,43 @@ document.addEventListener('DOMContentLoaded', () => {
                 return;
             }
 
-            const { latitude: lat, longitude: lon, name, country, timezone } = geoData.results[0];
+            const { latitude: lat, longitude: lon, name, country } = geoData.results[0];
 
-            // Second API: Open-Meteo Weather Forecast (No API Key Required)
-            const weatherUrl = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m,apparent_temperature,precipitation,weather_code,wind_speed_10m&timezone=auto`;
-            const weatherResponse = await fetch(weatherUrl);
-            const weatherData = await weatherResponse.json();
-
-            if (weatherData.error) {
-                showError("Could not fetch weather data.");
-                return;
-            }
-
-            const current = weatherData.current;
-
-            // Populate UI
-            elements.cityName.textContent = name;
-            elements.countryName.textContent = country || '';
-            updateDateTime(weatherData.timezone);
-
-            elements.temp.textContent = Math.round(current.temperature_2m);
-            elements.feelsLike.textContent = Math.round(current.apparent_temperature);
-            elements.humidity.textContent = current.relative_humidity_2m;
-            elements.windSpeed.textContent = current.wind_speed_10m;
-            elements.precipitation.textContent = current.precipitation;
-
-            // Update Icon & Description
-            const code = current.weather_code;
-            const weatherInfo = weatherCodes[code] || weatherCodes[0];
-
-            elements.weatherDesc.textContent = weatherInfo.desc;
-            elements.weatherIcon.className = `fa-solid wea-icon ${weatherInfo.icon} ${weatherInfo.class}`;
-
-            updateBackgroundTheme(weatherInfo.class);
-
-            // Show weather data
-            loader.classList.add('hidden');
-            weatherSection.classList.remove('hidden');
-
+            await displayWeather(lat, lon, name, country);
         } catch (error) {
             console.error(error);
             showError("An error occurred while fetching data.");
+        }
+    };
+
+    const getWeatherByLocation = () => {
+        if (navigator.geolocation) {
+            hideError();
+            weatherSection.classList.add('hidden');
+            loader.classList.remove('hidden');
+            
+            navigator.geolocation.getCurrentPosition(async (position) => {
+                const lat = position.coords.latitude;
+                const lon = position.coords.longitude;
+                try {
+                    const geoUrl = `https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${lat}&longitude=${lon}&localityLanguage=en`;
+                    const geoResponse = await fetch(geoUrl);
+                    const geoData = await geoResponse.json();
+                    
+                    const name = geoData.city || geoData.locality || "Current Location";
+                    const country = geoData.countryName || "";
+                    
+                    await displayWeather(lat, lon, name, country);
+                } catch (error) {
+                    console.error("Reverse geocoding error:", error);
+                    await displayWeather(lat, lon, "Current Location", "");
+                }
+            }, (error) => {
+                console.error("Geolocation error:", error);
+                getWeather('Delhi');
+            });
+        } else {
+            getWeather('Delhi');
         }
     };
 
@@ -176,5 +216,5 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // Load default weather
-    getWeather('Delhi');
+    getWeatherByLocation();
 });
