@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weather Predictor</title>
+    <link rel="stylesheet" href="style.css">
+    
+    <!-- Modern Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Search Bar -->
+        <div class="search-section">
+            <div class="input-wrapper">
+                <i class="fa-solid fa-magnifying-glass search-icon"></i>
+                <input type="text" id="city-input" placeholder="Search for a city..." spellcheck="false" autocomplete="off">
+            </div>
+            <button id="search-btn">Search</button>
+        </div>
+
+        <!-- Error State -->
+        <div class="error-message" id="error-message">
+            <i class="fa-solid fa-circle-exclamation"></i>
+            <span id="error-text">City not found.</span>
+        </div>
+
+        <!-- Weather Display -->
+        <div class="weather-section hidden" id="weather-section">
+            <div class="location">
+                <h1 id="city-name">London</h1>
+                <p id="country-name">United Kingdom</p>
+                <p id="date-time">Loading time...</p>
+            </div>
+            
+            <div class="current-weather">
+                <div class="weather-icon-wrapper">
+                    <i id="weather-icon" class="fa-solid fa-cloud wea-icon"></i>
+                </div>
+                <div class="temperature">
+                    <h2 id="temp">--</h2><span class="degree">°C</span>
+                </div>
+                <p id="weather-desc" class="condition">--</p>
+            </div>
+
+            <div class="weather-details">
+                <div class="detail-card">
+                    <i class="fa-solid fa-temperature-half"></i>
+                    <div class="detail-info">
+                        <p class="label">Feels Like</p>
+                        <p class="value"><span id="feels-like">--</span>°C</p>
+                    </div>
+                </div>
+                <div class="detail-card">
+                    <i class="fa-solid fa-droplet"></i>
+                    <div class="detail-info">
+                        <p class="label">Humidity</p>
+                        <p class="value"><span id="humidity">--</span>%</p>
+                    </div>
+                </div>
+                <div class="detail-card">
+                    <i class="fa-solid fa-wind"></i>
+                    <div class="detail-info">
+                        <p class="label">Wind Speed</p>
+                        <p class="value"><span id="wind-speed">--</span> km/h</p>
+                    </div>
+                </div>
+                <div class="detail-card">
+                    <i class="fa-solid fa-umbrella"></i>
+                    <div class="detail-info">
+                        <p class="label">Precipitation</p>
+                        <p class="value"><span id="precipitation">--</span> mm</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Loading State -->
+        <div class="loader hidden" id="loader">
+            <div class="spinner"></div>
+        </div>
+    </div>
+    
+    <script src="script.js"></script>
+</body>
+</html>
