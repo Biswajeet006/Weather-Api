@@ -55,10 +55,10 @@ document.addEventListener('DOMContentLoaded', () => {
     const updateDateTime = (timezoneStr) => {
         try {
             const now = new Date();
-            const options = { 
-                weekday: 'long', 
-                hour: 'numeric', 
-                minute: 'numeric', 
+            const options = {
+                weekday: 'long',
+                hour: 'numeric',
+                minute: 'numeric',
                 hour12: true,
                 timeZone: timezoneStr
             };
@@ -84,7 +84,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const updateBackgroundTheme = (weatherClass) => {
         const root = document.documentElement;
-        if(weatherClass === 'sunny') {
+        if (weatherClass === 'sunny') {
             root.style.setProperty('--bg-gradient-start', '#1e1e2f');
             root.style.setProperty('--bg-gradient-end', '#2d2b42');
         } else if (weatherClass === 'cloudy') {
@@ -133,12 +133,12 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             const current = weatherData.current;
-            
+
             // Populate UI
             elements.cityName.textContent = name;
             elements.countryName.textContent = country || '';
             updateDateTime(weatherData.timezone);
-            
+
             elements.temp.textContent = Math.round(current.temperature_2m);
             elements.feelsLike.textContent = Math.round(current.apparent_temperature);
             elements.humidity.textContent = current.relative_humidity_2m;
@@ -148,7 +148,7 @@ document.addEventListener('DOMContentLoaded', () => {
             // Update Icon & Description
             const code = current.weather_code;
             const weatherInfo = weatherCodes[code] || weatherCodes[0];
-            
+
             elements.weatherDesc.textContent = weatherInfo.desc;
             elements.weatherIcon.className = `fa-solid wea-icon ${weatherInfo.icon} ${weatherInfo.class}`;
 
@@ -176,5 +176,5 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // Load default weather
-    getWeather('London');
+    getWeather('Delhi');
 });
